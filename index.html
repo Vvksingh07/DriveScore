@@ -2,104 +2,87 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#101820" />
-  <meta name="description" content="DriveScore - track trips and build safer driving habits." />
-  <title>DriveScore</title>
-  <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="icon" href="icon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#10151f" />
+  <title>DriveScore – GPS Driving Safety Score & Trip Tracker</title>
+  <meta name="description" content="DriveScore is a GPS driving safety tracker and college project. Record a trip, see your route and speed, and understand scoring for harsh acceleration, braking and overspeeding using a safe demo mode." />
+  <meta name="robots" content="index,follow" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="DriveScore | GPS Driving Safety Tracker" />
+  <meta property="og:description" content="Track trips, view routes and explore safe driving scores. Includes a GPS demonstration mode." />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"DriveScore","applicationCategory":"TravelApplication","operatingSystem":"Web browser","description":"GPS-based driving safety tracking and demonstration project"}</script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
-      <a class="brand" href="#" aria-label="DriveScore home">
-        <span class="brand-mark">D</span>
-        <span>Drive<span class="brand-accent">Score</span></span>
-      </a>
-      <div class="top-actions">
-        <span class="live-pill"><span class="live-dot"></span> GPS READY</span>
-        <button class="icon-btn" id="installBtn" hidden title="Install app" aria-label="Install app">↓</button>
-      </div>
+      <a class="brand" href="#"><span class="brand-mark">D</span><span>Drive<span class="accent">Score</span><small>DRIVING BEHAVIOUR ANALYTICS</small></span></a>
+      <div class="api-status"><span id="apiDot" class="dot"></span><span id="apiStatus">Connecting to backend…</span></div>
     </header>
 
     <main>
-      <section class="hero-row">
-        <div>
-          <p class="eyebrow">YOUR DRIVE. YOUR SCORE.</p>
-          <h1>Drive smarter.<br /><span>Score higher.</span></h1>
-          <p class="hero-copy">Track your route, understand your driving and improve every trip.</p>
-        </div>
-        <div class="score-orb" aria-label="Current score">
-          <div class="score-ring"><strong id="scoreValue">100</strong><span>POINTS</span></div>
-        </div>
+      <section class="welcome">
+        <div><p class="eyebrow">YOUR DRIVE. YOUR DATA.</p><h1>Drive smarter.<br><span class="accent">Score higher.</span></h1>
+          <p class="sub">Turn every journey into an opportunity to become a safer driver.</p></div>
+        <div class="score-card"><div class="score-label">CURRENT TRIP SCORE</div><div class="score-number"><span id="score">100</span><small>/100</small></div><div class="score-track"><span id="scoreBar"></span></div><p id="scoreMessage">Ready for a safe journey</p></div>
       </section>
 
-      <section class="dashboard-grid">
-        <div class="panel map-panel">
-          <div class="panel-heading map-heading">
-            <div><p class="eyebrow">LIVE TRIP</p><h2>Your route</h2></div>
-            <span class="status-chip" id="gpsStatus">GPS OFF</span>
-          </div>
-          <div id="map" role="application" aria-label="Live GPS route map"></div>
-          <div class="map-footer">
-            <span><i class="legend-dot current"></i> Your location</span>
-            <span><i class="legend-line"></i> Driven route</span>
-            <button class="text-btn" id="centerMapBtn">Center map ↗</button>
-          </div>
-        </div>
-
-        <div class="side-column">
-          <div class="panel speed-panel">
-            <p class="eyebrow">CURRENT SPEED</p>
-            <div class="speed-reading"><strong id="speedValue">0</strong><span>km/h</span></div>
-            <div class="speed-track"><div id="speedBar"></div></div>
-            <div class="speed-meta"><span>0</span><span id="speedLimitLabel">Demo alert: 80 km/h</span><span>120</span></div>
-          </div>
-
-          <div class="stats-grid">
-            <div class="panel stat-card"><span class="stat-icon">↗</span><span class="stat-label">DISTANCE</span><strong id="distanceValue">0.00 <small>km</small></strong></div>
-            <div class="panel stat-card"><span class="stat-icon">◷</span><span class="stat-label">DURATION</span><strong id="durationValue">00:00</strong></div>
-            <div class="panel stat-card"><span class="stat-icon">⚡</span><span class="stat-label">HARSH EVENTS</span><strong id="eventsValue">0</strong></div>
-            <div class="panel stat-card"><span class="stat-icon">✓</span><span class="stat-label">TRIP STATUS</span><strong class="status-text" id="tripState">Ready</strong></div>
-          </div>
-
-          <div class="panel controls-panel">
-            <div class="control-row">
-              <div><p class="eyebrow">TRIP CONTROL</p><h2 id="controlTitle">Ready to roll?</h2></div>
-              <span class="record-indicator" id="recordIndicator"></span>
-            </div>
-            <p class="control-hint" id="controlHint">Allow location access, then start your trip.</p>
-            <div class="button-row">
-              <button class="primary-btn" id="startBtn">Start trip</button>
-              <button class="secondary-btn" id="stopBtn" disabled>Finish</button>
-            </div>
-            <p class="tiny-note">Use only when the phone is mounted safely. Never interact with the app while driving.</p>
-          </div>
-        </div>
+      <section class="metrics">
+        <article class="metric"><span class="metric-icon">◉</span><span class="metric-label">CURRENT SPEED</span><strong><span id="speed">0</span><small> km/h</small></strong><em id="speedStatus">Waiting for GPS</em></article>
+        <article class="metric"><span class="metric-icon">↗</span><span class="metric-label">DISTANCE</span><strong><span id="distance">0.00</span><small> km</small></strong><em>Current trip</em></article>
+        <article class="metric"><span class="metric-icon">◷</span><span class="metric-label">DURATION</span><strong id="duration">00:00</strong><em>Trip time</em></article>
+        <article class="metric"><span class="metric-icon">⌁</span><span class="metric-label">MAX SPEED</span><strong><span id="maxSpeed">0</span><small> km/h</small></strong><em>Current trip</em></article>
       </section>
 
-      <section class="lower-grid">
-        <div class="panel events-panel">
-          <div class="section-heading"><div><p class="eyebrow">DRIVING INSIGHTS</p><h2>Trip events</h2></div><span class="muted" id="eventSummary">No events yet</span></div>
-          <div id="eventList" class="event-list"><div class="empty-state">Your driving events will appear here during a trip.</div></div>
-        </div>
-        <div class="panel history-panel">
-          <div class="section-heading"><div><p class="eyebrow">YOUR PROGRESS</p><h2>Recent trips</h2></div><button class="text-btn" id="exportBtn">Export CSV ↓</button></div>
-          <div id="historyList" class="history-list"><div class="empty-state">Completed trips will be saved on this device.</div></div>
-        </div>
+      <section class="main-grid">
+        <article class="panel map-panel">
+          <div class="panel-head"><div><p class="eyebrow">LIVE LOCATION</p><h2>Trip route</h2></div><span class="live-pill"><i></i> LIVE MAP</span></div>
+          <div id="map"></div>
+          <div class="map-foot"><span id="locationText">Location not acquired</span><span id="gpsAccuracy">GPS accuracy —</span></div>
+        </article>
+        <aside class="panel controls-panel">
+          <p class="eyebrow">TRIP CONTROL</p><h2>Ready when you are.</h2>
+          <p class="muted">Start a trip to begin recording your route and driving metrics.</p>
+          <button id="startBtn" class="btn btn-primary">▶ &nbsp; Start trip</button>
+          <button id="stopBtn" class="btn btn-stop" disabled>■ &nbsp; Finish trip</button>
+          <div class="divider"></div>
+          <label class="toggle-row"><span><b>GPS demo mode</b><small>Simulated trip for college demonstration (no real movement needed)</small></span><input id="demoToggle" type="checkbox" checked></label>
+          <p class="demo-note">Turn demo mode off before starting to use real GPS on a phone. Location permission and HTTPS are required. GPS-derived safety events are estimates, not calibrated driving measurements.</p>
+          <button id="simulateAccelerationBtn" class="btn btn-quiet" disabled>
+            ⚡ Simulate Hard Acceleration
+          </button>
+          <p class="demo-note">When you finish a trip, DriveScore saves the route and score on this server. Trip history is linked to this browser using a private cookie. Clearing cookies or changing devices means you may not see old trips.</p>
+          <div class="divider"></div>
+          <div class="event-heading"><h3>Driving events</h3><span id="eventCount">0 events</span></div>
+          <div id="events" class="events-empty">No events recorded yet.</div>
+        </aside>
       </section>
 
-      <section class="disclaimer">
-        <span>ⓘ</span><p><strong>College-project prototype:</strong> GPS-based speed and event detection are estimates, not certified vehicle telemetry. The 80 km/h alert is a demo threshold, not the legal speed limit. Keep your eyes on the road and obey posted limits.</p>
+      <section class="panel history-panel">
+        <div class="panel-head"><div><p class="eyebrow">YOUR PERFORMANCE</p><h2>Trip history</h2></div><button id="refreshBtn" class="btn btn-quiet">↻ Refresh</button></div>
+        <div id="history" class="history-empty">Your saved trips will appear here.</div>
       </section>
+      <section class="panel about-panel" id="about">
+        <p class="eyebrow">ABOUT DRIVESCORE</p>
+        <h2>How this driving safety website works</h2>
+        <p>DriveScore is a student-built GPS driving behaviour monitoring website. Start a trip to measure estimated speed, distance, duration and the route on an interactive map. The trip begins with a 100-point safety score. Possible sudden braking, hard acceleration and speed above the demonstration threshold can reduce it.</p>
+        <div class="steps-grid">
+          <div><strong>01 · Start a trip</strong><p>Choose real GPS tracking or the built-in simulated route, then press Start Trip.</p></div>
+          <div><strong>02 · View driving events</strong><p>Follow the route, observe the live metrics, and see how detected events change the score.</p></div>
+          <div><strong>03 · Save your results</strong><p>Press Finish Trip to store your summary and driving events in a SQLite database.</p></div>
+        </div>
+        <p class="about-fine">This is an educational prototype. The 80 km/h demo alert is not a statement of a legal speed limit. Browser GPS can be inaccurate. Do not operate this website while driving.</p>
+      </section>
+      <footer>DriveScore College Project · GPS-based driving behaviour monitoring · <span id="year"></span></footer>
     </main>
-    <footer><span>DriveScore © 2026</span><span>Built for safer journeys</span></footer>
   </div>
-
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script src="app.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/map.js"></script>
+  <script src="/js/gps.js"></script>
+  <script src="/js/app.js"></script>
 </body>
 </html>
